@@ -32,8 +32,8 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,19 +63,19 @@
             this.toolStripLabel2.Text = "Load";
             this.toolStripLabel2.Click += new System.EventHandler(this.ToolStripLabel2_Click);
             // 
-            // toolStripLabel3
-            // 
-            this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(31, 22);
-            this.toolStripLabel3.Text = "New";
-            this.toolStripLabel3.Click += new System.EventHandler(this.ToolStripLabel3_Click);
-            // 
             // toolStripLabel4
             // 
             this.toolStripLabel4.Name = "toolStripLabel4";
             this.toolStripLabel4.Size = new System.Drawing.Size(31, 22);
             this.toolStripLabel4.Text = "New";
             this.toolStripLabel4.Click += new System.EventHandler(this.ToolStripLabel3_Click);
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(31, 22);
+            this.toolStripLabel3.Text = "New";
+            this.toolStripLabel3.Click += new System.EventHandler(this.ToolStripLabel3_Click);
             // 
             // Form1
             // 
@@ -85,7 +85,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Graph ";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
