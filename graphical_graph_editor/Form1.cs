@@ -19,6 +19,10 @@ namespace graphical_graph_editor
         Node selectedNode;
 
         Node selected = null;
+        Boolean mousePressed = false;
+        
+        Boolean justSaved = true;
+        int radio = 30;
 
         public Form1()
         {
@@ -26,7 +30,6 @@ namespace graphical_graph_editor
             Nodes = new List<Node>();
             Lines = new List<Line>();
             selectedNode = new Node();
-
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -41,15 +44,18 @@ namespace graphical_graph_editor
             }
             foreach (Node node in Nodes)
             {
-                rectangle = new Rectangle(node.X - 50, node.Y - 50, 100, 100);
+                rectangle = new Rectangle(node.X - radio, node.Y - radio, radio*2, radio*2);
                 graphics.FillEllipse(brush, rectangle);
                 pen = new Pen(node.Color, 5);
-                graphics.DrawEllipse(pen, node.X - 50, node.Y - 50, 100, 100);
+                graphics.DrawEllipse(pen, node.X - radio, node.Y - radio, radio*2, radio*2);
             }
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
+            justSaved = false;
+            mousePressed = true;
+            
             int x, y;
             int find = 0;
             Node node = null;
@@ -60,7 +66,7 @@ namespace graphical_graph_editor
                 {
                     x = oneNode.X;
                     y = oneNode.Y;
-                    if (e.X > x - 50 && e.X < x + 50 && e.Y > y - 50 && e.Y < y + 50)
+                    if (e.X > x - radio && e.X < x + radio && e.Y > y - radio && e.Y < y + radio)
                     {
                         find = 1;
                         node = oneNode;
@@ -71,7 +77,6 @@ namespace graphical_graph_editor
                 {                    
                     if (selected == null)
                     {
-                        //MessageBox.Show("Selecting");
                         node.Color = Color.Blue;
                         selectedNode = selected = node;                        
                     }
@@ -79,7 +84,6 @@ namespace graphical_graph_editor
                     {
                         if (selected != node)
                         {
-                            //MessageBox.Show("conecting nodes");
                             Line linea = new Line(selected,node);
                             Lines.Add(linea);
                             selected = null;
@@ -103,7 +107,7 @@ namespace graphical_graph_editor
                 {
                     x = oneNode.X;
                     y = oneNode.Y;
-                    if (e.X > x - 50 && e.X < x + 50 && e.Y > y - 50 && e.Y < y + 50)
+                    if (e.X > x - radio && e.X < x + radio && e.Y > y - radio && e.Y < y + radio)
                     {
                         find = 1;
                         node = oneNode;
@@ -118,14 +122,27 @@ namespace graphical_graph_editor
                         selected = null;
                     }
                 }   
-            }
-
-            
-
-            
+            }            
             Invalidate();
         }
 
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                mousePressed = false;
+            }
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(mousePressed == true && e.Button == MouseButtons.Left && selected != null )
+            {
+                    selected.X = e.X;
+                    selected.Y = e.Y;
+                    Invalidate();
+            }            
+        }
 
         public void eliminateNexetEdges(Node node)
         {
@@ -146,6 +163,7 @@ namespace graphical_graph_editor
             string[] auxiliar;
             StreamReader sr = null;
             OpenFileDialog openFileDialog = new OpenFileDialog();
+     
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -161,12 +179,31 @@ namespace graphical_graph_editor
                 }
                 while (sr != null && !sr.EndOfStream)
                 {
+                    Node server = new Node();
+                    Node client = new Node();
                     auxiliar = sr.ReadLine().Split(',');
-                    int nodo1 = int.Parse(auxiliar[0]);
-                    int nodo2 = int.Parse(auxiliar[1]);
+                    int nodo1X = int.Parse(auxiliar[0]);
+                    int nodo1Y = int.Parse(auxiliar[1]);
+                    int nodo2X = int.Parse(auxiliar[2]);
+                    int nodo2Y = int.Parse(auxiliar[3]);                    
+               
+                    foreach (Node node in Nodes)
+                    {
+                        if (node.X == nodo1X && node.Y == nodo1Y)//it just can be one of all
+                        {
+                            server = node;
+                        }
+                        else
+                        {
+                            if (node.X == nodo2X && node.Y == nodo2Y)//it also can be just one of all
+                            {
+                                client = node;
+                            }
+                        }                        
+                    }
+                    Line linea = new Line(server, client);
+                    Lines.Add(linea);
 
-                    //Line linea = new Line(Nodes[nodo1].X, Nodes[nodo1].Y, Nodes[nodo2].X, Nodes[nodo2].Y, nodo1, nodo2);
-                    //Lines.Add(linea);
                 }
                 sr.Close();
             }
@@ -191,9 +228,10 @@ namespace graphical_graph_editor
             sw.WriteLine("Lines");
             foreach (Line line in Lines)
             {
-                sw.WriteLine(line.Node1 + "," + line.Node2);
+                sw.WriteLine(line.Node1.X + "," + line.Node1.Y + ","+ line.Node2.X + "," + line.Node2.Y);
             }
             sw.Close();
+            justSaved = true;
         }
 
         public class Node
@@ -215,7 +253,6 @@ namespace graphical_graph_editor
             {
                 this.X = x;
                 this.Y = y;
-                this.index = index;
                 color = Color.Black;
             }
 
@@ -229,12 +266,9 @@ namespace graphical_graph_editor
         }
 
         public class Line
-        {
-            int x1, y1, x2, y2, node1, node2;
-
+        {    
             Node client = null;
             Node server = null;
-            int remainingInt;
 
             public Line(Node client, Node server)
             {
@@ -258,9 +292,51 @@ namespace graphical_graph_editor
 
         private void ToolStripLabel2_Click(object sender, EventArgs e)
         {
-            Nodes.Clear();
-            Lines.Clear();
-            openFile();
+            if(justSaved == false)
+            {
+                SaveChangesWindow gdc = new SaveChangesWindow();
+                gdc.ShowDialog();
+                if (gdc.Operation == 1 || gdc.Operation == 2)
+                {
+                    if (gdc.Operation == 1)
+                    {
+                        saveFile();
+                    }
+
+                    foreach (Node node in Nodes)
+                    {
+                        eliminateNexetEdges(node);
+                    }
+                    Nodes = new List<Node>();
+                    justSaved = true;
+                    openFile();
+                    
+                }
+            }
+            Invalidate();
+        }
+
+        private void ToolStripLabel3_Click(object sender, EventArgs e)
+        {
+            if(justSaved == false)
+            {
+                SaveChangesWindow gdc = new SaveChangesWindow();
+                gdc.ShowDialog();
+                if (gdc.Operation == 1 || gdc.Operation == 2)
+                {
+                    if (gdc.Operation == 1)
+                    {
+                        saveFile();
+                    }
+
+                    foreach (Node node in Nodes)
+                    {
+                        eliminateNexetEdges(node);
+                    }
+                    Nodes = new List<Node>();
+                    justSaved = true;
+                }                
+            }
             Invalidate();
         }
 
