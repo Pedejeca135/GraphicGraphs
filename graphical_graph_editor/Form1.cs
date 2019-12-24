@@ -234,6 +234,14 @@ namespace graphical_graph_editor
             justSaved = true;
         }
 
+// GraphAM class(Adjacency Matrix treated as list of lists)
+        public class GraphAM
+        {
+            List<Node> row;
+            List<List<Node>> colum;
+        }
+
+// Node class
         public class Node
         {
             Color color;
@@ -283,7 +291,6 @@ namespace graphical_graph_editor
             public Node Node1 { get { return client; } }
             public Node Node2 { get { return server; } }
         }
-
 
         private void ToolStripLabel1_Click(object sender, EventArgs e)
         {
